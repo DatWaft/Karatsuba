@@ -43,11 +43,11 @@ class Num:
 
 	# Métodos que devuelven información.
 	def getValue(self):
-		# convierte 'value' a un int en base 10.
+		# Convierte 'value' a un int en base 10.
 		return int(Num.list_to_string(self.value), self.base)
 
 	def getSize(self):
-		# devuelve el número de valores que tiene 'value' sin contar los 0s a la izquierda.
+		# Devuelve el número de valores que tiene 'value' sin contar los 0s a la izquierda.
 		return len(Num.list_to_string(self.value))
 
 
@@ -76,22 +76,19 @@ class Num:
 		return l
 
 
-	# Métodos de operaciones.
+	# Métodos de operación.
 	def add(self, num):
-		if not isinstance(num, Num):
-			raise Exception("'num' is not a Num.")
-		if self.max_length != num.max_length:
-			raise Exception("The max length of the two of them is different.")
-		if self.base != num.base:
-			raise Exception("The base of the two of them is different.")
-		base = self.base
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
+		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+
 		q = []
 		r = 0
 		for i,j in zip(self.value[::-1], num.value[::-1]):
-			q = [(i + j + r) % base] + q
-			r = (i + j + r) // base
+			q = [(i + j + r) % self.base] + q
+			r = (i + j + r) // self.base
 
-		return Num(q, base)
+		return Num(q, self.base, self.max_length)
 
 	def invert(self):
 		new = []
@@ -101,37 +98,41 @@ class Num:
 		return Num(new, self.base, self.max_length)
 
 	def sub(self, num):
-		if not isinstance(num, Num):
-			raise Exception("'num' is not a Num.")
-		if self.max_length != num.max_length:
-			raise Exception("The max length of the two of them is different.")
-		if self.base != num.base:
-			raise Exception("The base of the two of them is different.")
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
+		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+
 		aux = self + ~num
 		if(self.getValue() < num.getValue()):
 			aux = ~aux
 		aux = aux.value[aux.getSize() - self.getSize():]
 		return Num(aux, self.base, self.max_length)
 	
-	# def mul(self, num):
-	# 	if not isinstance(num, Num):
-	# 		raise Exception("'num' is not a Num.")
-	# 	if self.max_length != num.max_length:
-	# 		raise Exception("The max length of the two of them is different.")
-	# 	if self.base != num.base:
-	# 		raise Exception("The base of the two of them is different.")
+	def mul(self, num):
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
+		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
 		
-	# 	res = Num(0)
-	# 	cont1 = 0
-	# 	for i in self.value[::-1]:
-	# 		cont2 = 0
-	# 		aux = Num(0)
-	# 		for j in num.value[::-1]:
-	# 			aux += Num(i * j * self.base**cont2)
-	# 			cont2 += 1
-	# 		res += Num(aux.getValue() * self.base**cont1)
-	# 		cont1 += 1
+		cont1 = 0
+		res = Num(0, self.base, self.max_length)
+		for i in self.value[::-1]:
+			cont2 = 0
+			aux = Num(0, self.base, self.max_length)
+			for j in num.value[::-1]:
+				aux += Num(i * j * self.base**cont2, self.base, self.max_length)
+				cont2 += 1
+			res += Num(aux.getValue() * self.base**cont1, self.base, self.max_length)
+			cont1 += 1
+		return res
 
+	def pow(self, i):
+		if i < 0: raise Exception("El exponente no puede ser menor a 0")
+		if i == 0: return Num(1, self.base, self.max_length)
+
+		res = self
+		for x in range(1,i):
+			res *= self
+		return res
 
 	# Operadores sobrecargados.
 	def __add__(self, num):
@@ -151,18 +152,28 @@ class Num:
 		self = self - num
 		return self
 
+	def __mul__(self, num):
+		return self.mul(num)
+
+	def __imul__(self, num):
+		self = self * num
+		return self
+
+	def __pow__(self, i):
+		return self.pow(i)
+
+	def __ipow__(self, i):
+		self = self**i
+		return self
+
 	def __str__(self):
 		return f"Num({Num.list_to_string(self.value)})[{self.base}]"
 
+
 if __name__ == "__main__":
-	n1 = Num(15, 16)
+	n1 = Num(4315, 16)
+	print(f"n1 = {n1}")
 	print(n1.value)
-	n2 = Num('1d', 16)
-	print(n2.value)
-	print(f"n1 = {n1}")
-	print(f"n2 = {n2}")
-	print(f"n1 + n2 = {n1 + n2}")
-	n1 += n2
-	print(f"n1 = {n1}")
-	print(f"n2 = {n2}")
+	print(f"~n1 = {~n1}")
+	print((~n1).value)
 
