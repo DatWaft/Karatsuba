@@ -38,7 +38,7 @@ class Num:
 		
 		if len(self.value) > max_length: raise Exception("'value' es demasiado grande.")
 		
-		self.value = [0 for i in range(self.max_length - len(self.value))] + self.value
+		self.value = [0]*(self.max_length - len(self.value)) + self.value
 
 	@classmethod
 	def copy(cls, num):
@@ -59,6 +59,7 @@ class Num:
 	# Métodos 'static'.
 	@staticmethod
 	def list_to_string(a):
+		# Convierte una lista de 'int's a un 'str'.
 		s = ''
 		flag = False
 		for i in a:
@@ -73,6 +74,7 @@ class Num:
 
 	@staticmethod
 	def int_to_list(i, base):
+		# Convierte un 'int' base 10 a una 'list' de 'int's en base 'base'.
 		i = abs(i)
 		l = []
 		while i != 0:
@@ -150,6 +152,37 @@ class Num:
 			res *= self
 		return res
 
+	def div(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
+		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+		
+		cont = 0
+		while (num * cont).getValue() < self.getValue():
+			cont += 1
+		cont -= 1
+		return Num(cont, self.base, self.max_length), self - (num * cont)
+
+	def rshift(self, i):
+		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
+
+		new = Num.copy(self)
+		new.value = new.value[:-i]
+		new.value = [0]*i + new.value
+		return new
+	
+	def lshift(self, i):
+		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
+
+		new = Num.copy(self)
+		new.value = new.value[i:]
+		new.value = new.value + [0]*i
+		return new
+
+
 	# Operadores sobrecargados.
 	def __add__(self, num):
 		return self.add(num)
@@ -182,6 +215,41 @@ class Num:
 		self = self**i
 		return self
 
+	def __truediv__(self, num):
+		return self.div(num)[0]
+
+	def __idiv__(self, num):
+		self = self/num
+		return self
+
+	def __floordiv__(self, num):
+		return self.div(num)[0]
+
+	def __ifoordiv__(self, num):
+		self = self//num
+		return self
+
+	def __mod__(self, num):
+		return self.div(num)[1]
+
+	def __imod__(self, num):
+		self = self % num
+		return self
+
+	def __rshift__(self, i):
+		return self.rshift(i)
+
+	def __irshift__(self, i):
+		self = self >> i
+		return self
+
+	def __lshift__(self, i):
+		return self.lshift(i)
+
+	def __ilshift__(self, i):
+		self = self << i
+		return self
+
 	def __str__(self):
 		return f"Num({Num.list_to_string(self.value)})[{self.base}]"
 
@@ -191,15 +259,48 @@ class Num:
 	def __index__(self):
 		return self.getValue()
 
+	def __eq__(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if int(self) == int(num): return True
+		return False
+
+	def __ne__(self, num):
+		return not self == num
+	
+	def __lt__(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if int(self) < int(num): return True
+		return False
+
+	def __gt__(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
+		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		if int(self) > int(num): return True
+		return False
+
+	def __le__(self, num):
+		return not self > num
+
+	def __ge__(self, num):
+		return not self < num
+	
 
 if __name__ == "__main__":
-	n1 = Num(4315, 16)
-	print(f"n1 = {n1}")
-	print(n1.value)
-	print(f"~n1 = {~n1}")
-	print((~n1).value)
-	print(int(n1))
-	n2 = Num.copy(n1)
-	n2 += 12
-	print(n2)
-	print(int(n2))
+	n1 = Num(189, 16)
+	n2 = Num(2, 16)
+
+	print(n1)
+	print(n1 >> 1)
+	print(n1 << 1)
+	print('')
+	print(n1 / n2)
+	print(n1 // n2)
+	print(n1 % n2)
