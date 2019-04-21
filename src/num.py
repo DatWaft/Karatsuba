@@ -12,7 +12,7 @@ class Num:
 	CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyz'
 
 
-	# Método constructor.
+	# Métodos constructores.
 	def __init__(self, value, base = DEFAULT_BASE, max_length = DEFAULT_LENGTH):
 		"""
 		El constructor de la clase 'Num'.
@@ -39,6 +39,11 @@ class Num:
 		if len(self.value) > max_length: raise Exception("'value' es demasiado grande.")
 		
 		self.value = [0 for i in range(self.max_length - len(self.value))] + self.value
+
+	@classmethod
+	def copy(cls, num):
+		# Construtor copia.
+		return cls(num.value, num.base, num.max_length)
 
 
 	# Métodos que devuelven información.
@@ -78,6 +83,9 @@ class Num:
 
 	# Métodos de operación.
 	def add(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
 		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
 		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
 		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
@@ -98,6 +106,9 @@ class Num:
 		return Num(new, self.base, self.max_length)
 
 	def sub(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
 		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
 		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
 		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
@@ -109,6 +120,9 @@ class Num:
 		return Num(aux, self.base, self.max_length)
 	
 	def mul(self, num):
+		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
+			num = Num(num, self.base, self.max_length)
+
 		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
 		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
 		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
@@ -126,6 +140,8 @@ class Num:
 		return res
 
 	def pow(self, i):
+		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
+		
 		if i < 0: raise Exception("El exponente no puede ser menor a 0")
 		if i == 0: return Num(1, self.base, self.max_length)
 
@@ -169,6 +185,12 @@ class Num:
 	def __str__(self):
 		return f"Num({Num.list_to_string(self.value)})[{self.base}]"
 
+	def __int__(self):
+		return self.getValue()
+
+	def __index__(self):
+		return self.getValue()
+
 
 if __name__ == "__main__":
 	n1 = Num(4315, 16)
@@ -176,4 +198,8 @@ if __name__ == "__main__":
 	print(n1.value)
 	print(f"~n1 = {~n1}")
 	print((~n1).value)
-
+	print(int(n1))
+	n2 = Num.copy(n1)
+	n2 += 12
+	print(n2)
+	print(int(n2))
