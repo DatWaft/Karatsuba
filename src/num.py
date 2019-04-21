@@ -1,3 +1,11 @@
+"""
+Autores:
+  - Rebecca Garita Gutiérrez        117620191   Martes y Viernes, 10 AM
+  - David Alberto Guevara Sánchez   402450355   Martes y Viernes, 10 AM
+  - M. Fernanda Gonzáles Arias      117660980   Martes y Viernes, 10 AM
+  - Luis David Villalobos Gonzáles  117540697   Martes y Viernes, 10 AM
+"""
+
 class Num:
 	"""
 	La clase 'Num' simula un número de cualquier base entre 2 y 36.
@@ -5,6 +13,7 @@ class Num:
 		- value: es una 'list' de 'int's en base 10.
 		- max_length: es un 'int' que especifíca el número máximo de elemento que puede tener 'value'.
 		- base: es un 'int' que contiene en qué base está 'value'.
+	Todos los números contenidos en la clase 'Num' está en su valor absoluto.
 	"""
 	# Constantes.
 	DEFAULT_BASE = 10
@@ -85,6 +94,7 @@ class Num:
 
 	# Métodos de operación.
 	def add(self, num):
+		# Devuelve la suma de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -101,6 +111,7 @@ class Num:
 		return Num(q, self.base, self.max_length)
 
 	def invert(self):
+		# Devuelve el complemento del 'Num'.
 		new = []
 		for i in self.value:
 			new += [abs(self.base - 1 - i)]
@@ -108,6 +119,7 @@ class Num:
 		return Num(new, self.base, self.max_length)
 
 	def sub(self, num):
+		# Devuelve la resta entre dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -122,6 +134,7 @@ class Num:
 		return Num(aux, self.base, self.max_length)
 	
 	def mul(self, num):
+		# Devuelve la multiplicación de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -142,6 +155,7 @@ class Num:
 		return res
 
 	def pow(self, i):
+		# Devuelve el 'Num' elevado a la 'i'.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 		
 		if i < 0: raise Exception("El exponente no puede ser menor a 0")
@@ -153,6 +167,7 @@ class Num:
 		return res
 
 	def div(self, num):
+		# Devuelve el 'Num' dividido entre el otro 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -167,6 +182,7 @@ class Num:
 		return Num(cont, self.base, self.max_length), self - (num * cont)
 
 	def rshift(self, i):
+		# Mueve todos los dígitos a la derecha.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
@@ -175,6 +191,7 @@ class Num:
 		return new
 	
 	def lshift(self, i):
+		# Mueve todos los dígitos a la izquierda.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
@@ -185,81 +202,107 @@ class Num:
 
 	# Operadores sobrecargados.
 	def __add__(self, num):
+		# Operador '+'.
 		return self.add(num)
 
 	def __iadd__(self, num):
+		# Operador '+='.
 		self = self + num
 		return self
 
 	def __invert__(self):
+		# Operador '~'.
 		return self.invert()
 
 	def __sub__(self, num):
+		# Operador '-'.
 		return self.sub(num)
 
 	def __isub__(self, num):
+		# Operador '-='.
 		self = self - num
 		return self
 
 	def __mul__(self, num):
+		# Operador '*'.
 		return self.mul(num)
 
 	def __imul__(self, num):
+		# Operador '*='.
 		self = self * num
 		return self
 
 	def __pow__(self, i):
+		# Operador '**'.
 		return self.pow(i)
 
 	def __ipow__(self, i):
+		# Operador '**='.
 		self = self**i
 		return self
 
 	def __truediv__(self, num):
+		# Operador '/'.
+		# Es equivalente al operador '//'.
 		return self.div(num)[0]
 
 	def __idiv__(self, num):
+		# Operador '/='.
 		self = self/num
 		return self
 
 	def __floordiv__(self, num):
+		# Operador '//='.
 		return self.div(num)[0]
 
 	def __ifoordiv__(self, num):
+		# Operador '//='.
 		self = self//num
 		return self
 
 	def __mod__(self, num):
+		# Operador '%'.
 		return self.div(num)[1]
 
 	def __imod__(self, num):
+		# Operador '%='.
 		self = self % num
 		return self
 
 	def __rshift__(self, i):
+		# Operador '>>'.
 		return self.rshift(i)
 
 	def __irshift__(self, i):
+		# Operador '>>='.
 		self = self >> i
 		return self
 
 	def __lshift__(self, i):
+		# Operador '<<'.
 		return self.lshift(i)
 
 	def __ilshift__(self, i):
+		# Operador '<<='.
 		self = self << i
 		return self
 
 	def __str__(self):
+		# Cuando se convierte el objeto a un 'str'.
+		# Es lo que se imprime cuando uno hace print('objeto').
 		return f"Num({Num.list_to_string(self.value)})[{self.base}]"
 
 	def __int__(self):
+		# Convierte el objeto a 'int' base 10.
 		return self.getValue()
 
 	def __index__(self):
+		# Convierte el objeto a 'int' base 10.
+		# Se usa en slices, entre otros.
 		return self.getValue()
 
 	def __eq__(self, num):
+		# Operador '=='.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -268,9 +311,11 @@ class Num:
 		return False
 
 	def __ne__(self, num):
+		# Operador '!='.
 		return not self == num
 	
 	def __lt__(self, num):
+		# Operador '<'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -279,6 +324,7 @@ class Num:
 		return False
 
 	def __gt__(self, num):
+		# Operador '>'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
 
@@ -287,9 +333,11 @@ class Num:
 		return False
 
 	def __le__(self, num):
+		# Operador '<='.
 		return not self > num
 
 	def __ge__(self, num):
+		# Operador '>='.
 		return not self < num
 	
 
