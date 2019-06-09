@@ -49,6 +49,7 @@ def test(file_path, mode = None):
     print("\n*** Test Case Result ***")
     print(f"Total cases={total}. Failed={failed} Passed={passed}")
     print(f"Duration:{(end -start):.4f}sec")
+    return f"{(end -start):.4f}sec"
 
 if __name__ == "__main__":
     argv = sys.argv
