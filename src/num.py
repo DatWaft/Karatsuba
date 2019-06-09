@@ -85,9 +85,9 @@ class Num:
 	@staticmethod
 	def list_to_string(a):
 		# Convierte una lista de 'int's a un 'str'.
-		s = ''
-		for i in a:
-			s += Num.CHARACTERS[i]
+		def match(i):
+			return Num.CHARACTERS[i]
+		s = "".join(map(match, a))
 		s = s.lstrip('0')	# Elimina los '0's a la izquierda.
 
 		if not s: # Si el string termina vacío, retornar un '0'.
@@ -106,6 +106,9 @@ class Num:
 
 
 	# Métodos de operación.
+	def cut(self, i):
+		return Num(Num.list_to_string(self._value)[:i], self.base, self.max_length), Num(Num.list_to_string(self._value)[i:], self.base, self.max_length)
+
 	def add(self, num):
 		# Devuelve la suma de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
@@ -215,8 +218,8 @@ class Num:
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new._value[:-i]
-		new.value = [0]*i + new.value
+		new._value = new._value[:-i]
+		new._value = [0]*i + new._value
 		return new
 	
 	def lshift(self, i):
@@ -224,8 +227,8 @@ class Num:
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new._value[i:]
-		new.value = new.value + [0]*i
+		new._value = new._value[i:]
+		new._value = new._value + [0]*i
 		return new
 
 
