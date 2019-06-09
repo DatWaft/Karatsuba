@@ -65,12 +65,3 @@ class KNum(Num):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
 		return f"KNum({Num.list_to_string(self._value)})[{self.base}]"
-
-if __name__ == "__main__":
-	x = KNum(1233)
-	y = KNum(3244)
-
-	print(f"x = {x}")
-	print(f"y = {y}")
-	print(f"x*y = {x*y}")
-	print(f"x.value * y.value = {x.value * y.value}")
