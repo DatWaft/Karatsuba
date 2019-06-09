@@ -74,4 +74,3 @@ if __name__ == "__main__":
 	print(f"y = {y}")
 	print(f"x*y = {x*y}")
 	print(f"x.value * y.value = {x.value * y.value}")
-	print(f"x.karatsuba(y) = {x.karatsuba(y)}")
