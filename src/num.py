@@ -85,9 +85,9 @@ class Num:
 	@staticmethod
 	def list_to_string(a):
 		# Convierte una lista de 'int's a un 'str'.
-		s = ''
-		for i in a:
-			s += Num.CHARACTERS[i]
+		def match(i):
+			return Num.CHARACTERS[i]
+		s = "".join(map(match, a))
 		s = s.lstrip('0')	# Elimina los '0's a la izquierda.
 
 		if not s: # Si el string termina vacío, retornar un '0'.
