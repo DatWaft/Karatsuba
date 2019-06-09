@@ -30,24 +30,29 @@ class Num:
 		El parametro 'base' especifica la base del Num, y acepta valores entre 2 y 36.
 		El parametro 'length' especifica el largo máximo que puede tener el valor dentro del Num, no puede ser menor a 1.
 		"""
-		if base > 36 or base < 2: raise Exception("Base invalida. (2 - 36)")
+		if base > len(self.CHARACTERS) or base < 2: raise Exception(f"Base invalida. (2 - {len(self.CHARACTERS)})")
 		if max_length < 1: raise Exception("Largo máximo inválido, no puede ser menor a 1.")
 
-		self.base = base
-		self.max_length = max_length
+		self._base = base
+		self._max_length = max_length
 
 		if isinstance(value, int):
-			self.value = Num.int_to_list(value, base)
+			self._value = Num.int_to_list(value, base)
 		elif isinstance(value, str):
-			self.value = [int(x, base) for x in value]
+			self._value = [int(x, base) for x in value]
 		elif isinstance(value, list):
-			self.value = value
+			self._value = value
 		else:
-			raise Exception("'value' es un objeto inválido.")
+			raise Exception("'value' es un tipo de objeto inválido.")
 		
-		if len(self.value) > max_length: raise Exception("'value' es demasiado grande.")
-		
-		self.value = [0]*(self.max_length - len(self.value)) + self.value
+		if len(self._value) > self.max_length:
+			self._value = self._value[-self.max_length:]
+		else:
+			self._value = [0]*(self.max_length - len(self._value)) + self._value
+
+		for i in self._value:
+			if i < 0 or i >= base:
+				raise Exception("El parametro 'value' es invalido.")
 
 	@classmethod
 	def copy(cls, num):
@@ -56,29 +61,37 @@ class Num:
 
 
 	# Métodos que devuelven información.
-	def getValue(self):
+	@property
+	def value(self):
 		# Convierte 'value' a un int en base 10.
-		return int(Num.list_to_string(self.value), self.base)
+		return int(Num.list_to_string(self._value), self.base)
 
-	def getSize(self):
+	@property
+	def size(self):
 		# Devuelve el número de valores que tiene 'value' sin contar los 0s a la izquierda.
-		return len(Num.list_to_string(self.value))
+		return len(Num.list_to_string(self._value))
 
+	@property
+	def base(self):
+		# Devuelve la base del Num.
+		return self._base
+
+	@property
+	def max_length(self):
+		# Devuelve el tamaño máximo del vector 'value'.
+		return self._max_length
 
 	# Métodos 'static'.
 	@staticmethod
 	def list_to_string(a):
 		# Convierte una lista de 'int's a un 'str'.
 		s = ''
-		flag = False
 		for i in a:
-			if not flag and i != 0:
-				flag = True
-				s += Num.CHARACTERS[i]
-			elif flag:
-				s += Num.CHARACTERS[i]
-		if not s:
-			s = Num.CHARACTERS[0]
+			s += Num.CHARACTERS[i]
+		s = s.lstrip('0')	# Elimina los '0's a la izquierda.
+
+		if not s: # Si el string termina vacío, retornar un '0'.
+			return '0'
 		return s
 
 	@staticmethod
@@ -97,60 +110,68 @@ class Num:
 		# Devuelve la suma de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
-		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
-		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
 
 		q = []
 		r = 0
-		for i,j in zip(self.value[::-1], num.value[::-1]):
-			q = [(i + j + r) % self.base] + q
-			r = (i + j + r) // self.base
+		for i,j in zip(self._value[::-1], num._value[::-1]):
+			q = [(i + j + r) % base] + q
+			r = (i + j + r) // base
 
-		return Num(q, self.base, self.max_length)
+		return Num(q, base, max_length)
 
 	def invert(self):
 		# Devuelve el complemento del 'Num'.
 		new = []
-		for i in self.value:
+		for i in self._value:
 			new += [abs(self.base - 1 - i)]
-		new[len(new) - 1] += 1
 		return Num(new, self.base, self.max_length)
 
 	def sub(self, num):
 		# Devuelve la resta entre dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
-		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
-		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
 
 		aux = self + ~num
-		if(self.getValue() < num.getValue()):
+		if(self.value < num.value):
 			aux = ~aux
-		aux = aux.value[aux.getSize() - self.getSize():]
-		return Num(aux, self.base, self.max_length)
+		aux = aux._value[aux.size - self.size:]
+		return Num(aux, base, max_length)
 	
 	def mul(self, num):
 		# Devuelve la multiplicación de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
-		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
-		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
 		
 		cont1 = 0
-		res = Num(0, self.base, self.max_length)
-		for i in self.value[::-1]:
+		res = Num(0, base, max_length)
+		for i in self._value[::-1]:
 			cont2 = 0
-			aux = Num(0, self.base, self.max_length)
-			for j in num.value[::-1]:
-				aux += Num(i * j * self.base**cont2, self.base, self.max_length)
+			aux = Num(0, base, max_length)
+			for j in num._value[::-1]:
+				aux += Num(i * j * base**cont2, base, max_length)
 				cont2 += 1
-			res += Num(aux.getValue() * self.base**cont1, self.base, self.max_length)
+			res += Num(aux.value * base**cont1, base, max_length)
 			cont1 += 1
 		return res
 
@@ -168,39 +189,68 @@ class Num:
 
 	def div(self, num):
 		# Devuelve el 'Num' dividido entre el otro 'Num'.
+		# Es un algoritmo súper ineficiente.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
-		if self.max_length != num.max_length: raise Exception("El atributo 'max_length' es diferente en los dos 'Num'.")
-		if self.base != num.base: raise Exception("La base de los dos 'Num' es diferente.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
+
+		if num.value == 0:
+			raise Exception("División por 0")
 		
 		cont = 0
-		while (num * cont).getValue() < self.getValue():
+		while (num * cont).value <= self.value:
 			cont += 1
 		cont -= 1
-		return Num(cont, self.base, self.max_length), self - (num * cont)
+		return Num(cont, base, max_length), self - (num * cont)
 
 	def rshift(self, i):
-		# Mueve todos los dígitos a la derecha.
+		# Mueve todos los dígitos a la derecha i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new.value[:-i]
+		new.value = new._value[:-i]
 		new.value = [0]*i + new.value
 		return new
 	
 	def lshift(self, i):
-		# Mueve todos los dígitos a la izquierda.
+		# Mueve todos los dígitos a la izquierda i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new.value[i:]
+		new.value = new._value[i:]
 		new.value = new.value + [0]*i
 		return new
 
 
 	# Operadores sobrecargados.
+	def __str__(self):
+		# Cuando se convierte el objeto a un 'str'.
+		# Es lo que se imprime cuando uno hace print('objeto').
+		return f"Num({Num.list_to_string(self._value)})[{self.base}]"
+
+	def __repr__(self):
+		# Es una representación imprimible del objeto.
+		return self.__str__()
+
+	def __int__(self):
+		# Convierte el objeto a 'int' base 10.
+		return self.value
+
+	def __index__(self):
+		# Convierte el objeto a 'int' base 10.
+		# Se usa en slices, entre otros.
+		return self.value
+
+	def __len__(self):
+		# Se utiliza cuando se hace len(Num)
+		return self.max_length
+
 	def __add__(self, num):
 		# Operador '+'.
 		return self.add(num)
@@ -287,26 +337,18 @@ class Num:
 		self = self << i
 		return self
 
-	def __str__(self):
-		# Cuando se convierte el objeto a un 'str'.
-		# Es lo que se imprime cuando uno hace print('objeto').
-		return f"Num({Num.list_to_string(self.value)})[{self.base}]"
-
-	def __int__(self):
-		# Convierte el objeto a 'int' base 10.
-		return self.getValue()
-
-	def __index__(self):
-		# Convierte el objeto a 'int' base 10.
-		# Se usa en slices, entre otros.
-		return self.getValue()
-
 	def __eq__(self, num):
 		# Operador '=='.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
+		
 		if int(self) == int(num): return True
 		return False
 
@@ -318,8 +360,14 @@ class Num:
 		# Operador '<'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
+		
 		if int(self) < int(num): return True
 		return False
 
@@ -327,8 +375,14 @@ class Num:
 		# Operador '>'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
 			num = Num(num, self.base, self.max_length)
+		if not isinstance(num, Num): raise Exception("'num' no es de un tipo valido.")
 
-		if not isinstance(num, Num): raise Exception("'num' no es de tipo 'Num'.")
+		max_length = max(self.max_length, num.max_length)
+		base = self.base
+
+		if self.base != num.base:
+			num = Num(num.value, base, max_length)
+		
 		if int(self) > int(num): return True
 		return False
 
@@ -339,16 +393,3 @@ class Num:
 	def __ge__(self, num):
 		# Operador '>='.
 		return not self < num
-	
-
-if __name__ == "__main__":
-	n1 = Num(189, 16)
-	n2 = Num(2, 16)
-
-	print(n1)
-	print(n1 >> 1)
-	print(n1 << 1)
-	print('')
-	print(n1 / n2)
-	print(n1 // n2)
-	print(n1 % n2)
