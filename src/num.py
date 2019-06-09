@@ -106,6 +106,9 @@ class Num:
 
 
 	# Métodos de operación.
+	def cut(self, i):
+		return Num(Num.list_to_string(self._value)[:i], self.base, self.max_length), Num(Num.list_to_string(self._value)[i:], self.base, self.max_length)
+
 	def add(self, num):
 		# Devuelve la suma de dos 'Num'.
 		if isinstance(num, int) or isinstance(num, str) or isinstance(num, list):
@@ -215,8 +218,8 @@ class Num:
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new._value[:-i]
-		new.value = [0]*i + new.value
+		new._value = new._value[:-i]
+		new._value = [0]*i + new._value
 		return new
 	
 	def lshift(self, i):
@@ -224,8 +227,8 @@ class Num:
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
 		new = Num.copy(self)
-		new.value = new._value[i:]
-		new.value = new.value + [0]*i
+		new._value = new._value[i:]
+		new._value = new._value + [0]*i
 		return new
 
 

@@ -13,27 +13,29 @@ class KNum(Num):
 			knum = KNum(knum.value, base, max_length)
 
 		# Caso base
-		if self.size < 1 or knum.size < 1:
-			return super().mul(knum)
+		if self.size <= 1 or knum.size <= 1:
+			return KNum(self.value * knum.value, self.base, self.max_length)
 
+		# Caso recursivo
 		n = max(self.size, knum.size)
 		m = n//2
 
-		x1 = self / base**m
-		x0 = self % base**m
+		x1, x0 = self.cut(m)
+		y1, y0 = knum.cut(m)
 
-		y1 = knum / base**m
-		y0 = knum % base**m
+		z0 = x0.karatsuba(y0)
+		z2 = x1.karatsuba(y1)
 
-		z0 = x0*y0
-		z2 = x1*y1
+		z1 = (x0 + x1).karatsuba(y1 + y0) - z2 - z0
 
-		z1 = (x0 + x1)*(y1 + y0) - z2 - z0
-
-		return z2*base**(2*m) + z1*base**m + z0
+		return (z2 << (2*m)) + (z1 << m) + z0
 
 
 	# Métodos de operación.
+	def cut(self, i):
+		t = super().cut(i)
+		return KNum.copy(t[0]), KNum.copy(t[1])
+
 	def add(self, num):
 		return KNum.copy(super().add(num))
 
@@ -44,7 +46,7 @@ class KNum(Num):
 		return KNum.copy(super().sub(num))
 	
 	def mul(self, num):
-		return KNum.copy(super().mul(num))
+		return KNum.copy(self.karatsuba(num))
 
 	def pow(self, i):
 		return KNum.copy(super().pow(i))
