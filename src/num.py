@@ -184,7 +184,7 @@ class Num:
 		if i == 0: return Num(1, self.base, self.max_length)
 
 		res = self
-		for x in range(1,i):
+		for _ in range(1,i):
 			res *= self
 		return res
 
