@@ -55,10 +55,10 @@ class KNum(Num):
 		t = super().div(num)
 		return KNum.copy(t[0]), KNum.copy(t[1])
 
-	def rshift(self, i):
+	def rshift(self, i): #mueve a la derecha
 		return KNum.copy(super().rshift(i))
 	
-	def lshift(self, i):
+	def lshift(self, i): # mover a la izquierda
 		return KNum.copy(super().lshift(i))
 
 	def __str__(self):
