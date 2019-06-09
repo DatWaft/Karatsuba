@@ -148,8 +148,9 @@ class Num:
 		aux = self + ~num
 		if(self.value < num.value):
 			aux = ~aux
-		aux = aux._value[aux.size - self.size:]
-		return Num(aux, base, max_length)
+		else:
+			aux += 1
+		return aux
 	
 	def mul(self, num):
 		# Devuelve la multiplicación de dos 'Num'.

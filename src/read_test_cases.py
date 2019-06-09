@@ -29,13 +29,13 @@ def test(file_path, mode = None):
         (case_num, xval, yval, expected) = (int(n) for n in case.split(";"))
         print(f"Processing case {case_num}")
 
-        if not mode or mode == 'mult':
+        if not mode or mode == 'mult' or mode == '*':
             expected, given = mult(expected, xval, yval)
-        elif mode == 'div':
+        elif mode == 'div' or mode == '/':
             expected, given = div(expected, xval, yval)
-        elif mode == 'sum':
+        elif mode == 'sum' or mode == '+':
             expected, given = sum(expected, xval, yval)
-        elif mode == 'rest':
+        elif mode == 'rest' or mode == '-':
             expected, given = rest(expected, xval, yval)
 
         if  given != expected:
