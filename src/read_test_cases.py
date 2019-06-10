@@ -27,7 +27,7 @@ def test(file_path, mode = None):
         if case.startswith("#"): 
             continue
         (case_num, xval, yval, expected) = (int(n) for n in case.split(";"))
-        print(f"Processing case {case_num}")
+        print(f"\nProcessing case {case_num}: {xval} * {yval}")
 
         if not mode or mode == 'mult' or mode == '*':
             expected, given = mult(expected, xval, yval)
@@ -39,10 +39,12 @@ def test(file_path, mode = None):
             expected, given = rest(expected, xval, yval)
 
         if  given != expected:
-            print(f"*** Case {case_num} failed! {given} != {expected} ***")
+            print(f" Result: {given} != Expected: {expected}")
+            print(f'*** Case {case_num} failed! ***')
             failed += 1
         else:
-            print(f"*** Case {case_num} passes! ***")
+            print(f" Result: {given} != Expected: {expected}")
+            print(f'*** Case {case_num} passes! ***')
             passed += 1
             
     end = time.time()
