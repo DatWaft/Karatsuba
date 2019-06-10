@@ -14,14 +14,14 @@ class KNum(Num):
 
 		# Caso base
 		if self.size <= 1 or knum.size <= 1:
-			return KNum(self.value * knum.value, self.base, self.max_length)
+			return KNum(self.value * knum.value, base, max_length)
 
 		# Caso recursivo
 		n = max(self.size, knum.size)
 		m = n//2
 
-		x1, x0 = self.cut(m)
-		y1, y0 = knum.cut(m)
+		x1, x0 = self >> m, KNum(self.value % base**m)
+		y1, y0 = knum >> m, KNum(knum.value % base**m)
 
 		z0 = x0.karatsuba(y0)
 		z2 = x1.karatsuba(y1)
@@ -65,3 +65,8 @@ class KNum(Num):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
 		return f"KNum({Num.list_to_string(self._value)})[{self.base}]"
+
+if __name__ == "__main__":
+	x = 2423423
+	y = 2523
+	print(f"{KNum(x) * KNum(y)} == {x*y}")

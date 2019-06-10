@@ -107,7 +107,9 @@ class Num:
 
 	# Métodos de operación.
 	def cut(self, i):
-		return Num(Num.list_to_string(self._value)[:i], self.base, self.max_length), Num(Num.list_to_string(self._value)[i:], self.base, self.max_length)
+		n1 = Num(Num.list_to_string(self._value)[:i], self.base, self.max_length)
+		n2 = Num(Num.list_to_string(self._value)[i:], self.base, self.max_length)
+		return n1,n2 
 
 	def add(self, num):
 		# Devuelve la suma de dos 'Num'.
