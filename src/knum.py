@@ -20,8 +20,8 @@ class KNum(Num):
 		n = max(self.size, knum.size)
 		m = n//2
 
-		x1, x0 = self.cut(m)
-		y1, y0 = knum.cut(m)
+		x1, x0 = self >> m, KNum(self.value % base**m)
+		y1, y0 = knum >> m, KNum(knum.value % base**m)
 
 		z0 = x0.karatsuba(y0)
 		z2 = x1.karatsuba(y1)
@@ -36,23 +36,23 @@ class KNum(Num):
 		t = super().cut(i)
 		return KNum.copy(t[0]), KNum.copy(t[1])
 
-	def add(self, knum):
-		return KNum.copy(super().add(knum))
+	def add(self, num):
+		return KNum.copy(super().add(num))
 
 	def invert(self):
 		return KNum.copy(super().invert())
 
-	def sub(self, knum):
-		return KNum.copy(super().sub(knum))
+	def sub(self, num):
+		return KNum.copy(super().sub(num))
 	
-	def mul(self, knum):
-		return KNum.copy(self.karatsuba(knum))
+	def mul(self, num):
+		return KNum.copy(self.karatsuba(num))
 
 	def pow(self, i):
 		return KNum.copy(super().pow(i))
 
-	def div(self, knum):
-		t = super().div(knum)
+	def div(self, num):
+		t = super().div(num)
 		return KNum.copy(t[0]), KNum.copy(t[1])
 
 	def rshift(self, i): #mueve a la derecha
@@ -64,4 +64,9 @@ class KNum(Num):
 	def __str__(self):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
-		return f"KNum({self.string})[{self.base}]"
+		return f"KNum({Num.list_to_string(self._value)})[{self.base}]"
+
+if __name__ == "__main__":
+	x = 2423423
+	y = 2523
+	print(f"{KNum(x) * KNum(y)} == {x*y}")
