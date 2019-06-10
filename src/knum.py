@@ -18,7 +18,7 @@ class KNum(Num):
 
 		# Caso recursivo
 		n = max(self.size, knum.size)
-		m = n//2
+		m = n/2
 
 		x1, x0 = self.cut(m)
 		y1, y0 = knum.cut(m)
@@ -26,7 +26,7 @@ class KNum(Num):
 		z0 = x0.karatsuba(y0)
 		z2 = x1.karatsuba(y1)
 
-		z1 = (x0 + x1).karatsuba(y1 + y0) - z2 - z0
+		z1 = (x1 + x0).karatsuba(y1 + y0) - z2 - z0
 
 		return (z2 << (2*m)) + (z1 << m) + z0
 
