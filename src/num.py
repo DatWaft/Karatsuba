@@ -54,6 +54,8 @@ class Num:
 			if i < 0 or i >= base:
 				raise Exception("El parametro 'value' es invalido.")
 
+		self._string = Num.list_to_string(self._value)
+
 	@classmethod
 	def copy(cls, num):
 		# Construtor copia.
@@ -62,14 +64,19 @@ class Num:
 
 	# Métodos que devuelven información.
 	@property
+	def string(self):
+		# Devuelve un string del Num.
+		return self._string
+
+	@property
 	def value(self):
 		# Convierte 'value' a un int en base 10.
-		return int(Num.list_to_string(self._value), self.base)
+		return int(self.string, self.base)
 
 	@property
 	def size(self):
 		# Devuelve el número de valores que tiene 'value' sin contar los 0s a la izquierda.
-		return len(Num.list_to_string(self._value))
+		return len(self.string)
 
 	@property
 	def base(self):
@@ -107,8 +114,8 @@ class Num:
 
 	# Métodos de operación.
 	def cut(self, i):
-		n1 = Num(Num.list_to_string(self._value)[:i], self.base, self.max_length)
-		n2 = Num(Num.list_to_string(self._value)[i:], self.base, self.max_length)
+		n1 = Num(self.string[:-i], self.base, self.max_length)
+		n2 = Num(self.string[-i:], self.base, self.max_length)
 		return n1,n2 
 
 	def add(self, num):
@@ -221,10 +228,10 @@ class Num:
 		if i == 0:
 			return self
 
-		new = Num.copy(self)
-		new._value = new._value[:-i]
-		new._value = [0]*i + new._value
-		return new
+		new = self._value
+		new = new[:-i]
+		new = [0]*i + new
+		return Num(new, self.base, self.max_length)
 	
 	def lshift(self, i):
 		# Mueve todos los dígitos a la izquierda i campos.
@@ -233,17 +240,17 @@ class Num:
 		if i == 0:
 			return self
 
-		new = Num.copy(self)
-		new._value = new._value[i:]
-		new._value = new._value + [0]*i
-		return new
+		new = self._value
+		new = new[i:]
+		new = new + [0]*i
+		return Num(new, self.base, self.max_length)
 
 
 	# Operadores sobrecargados.
 	def __str__(self):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
-		return f"Num({Num.list_to_string(self._value)})[{self.base}]"
+		return f"Num({self.string})[{self.base}]"
 
 	def __repr__(self):
 		# Es una representación imprimible del objeto.
