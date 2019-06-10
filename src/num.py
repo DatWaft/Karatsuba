@@ -39,9 +39,6 @@ class Num:
 		if isinstance(value, int):
 			self._value = Num.int_to_list(value, base)
 		elif isinstance(value, str):
-			for s in value:
-				if not isinstance(s, int):
-					raise Exception("'value' es un tipo de objeto inválido.")
 			self._value = [int(x, base) for x in value]
 		elif isinstance(value, list):
 			self._value = value
