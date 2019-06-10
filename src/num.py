@@ -20,7 +20,6 @@ class Num:
 	DEFAULT_LENGTH = 16
 	CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyz'
 
-
 	# Métodos constructores.
 	def __init__(self, value, base = DEFAULT_BASE, max_length = DEFAULT_LENGTH):
 		"""
@@ -35,10 +34,14 @@ class Num:
 
 		self._base = base
 		self._max_length = max_length
-
+		self._sign = True
+		
 		if isinstance(value, int):
 			self._value = Num.int_to_list(value, base)
 		elif isinstance(value, str):
+			for s in value:
+				if not isinstance(s, int):
+					raise Exception("'value' es un tipo de objeto inválido.")
 			self._value = [int(x, base) for x in value]
 		elif isinstance(value, list):
 			self._value = value
@@ -53,12 +56,12 @@ class Num:
 		for i in self._value:
 			if i < 0 or i >= base:
 				raise Exception("El parametro 'value' es invalido.")
+		
 
 	@classmethod
 	def copy(cls, num):
 		# Construtor copia.
 		return cls(num.value, num.base, num.max_length)
-
 
 	# Métodos que devuelven información.
 	@property
@@ -134,7 +137,9 @@ class Num:
 		new = []
 		for i in self._value:
 			new += [abs(self.base - 1 - i)]
-		return Num(new, self.base, self.max_length)
+		new = Num(new, self.base, self.max_length) + Num(1,self.base)
+		new._sign = not self._sign 
+		return new
 
 	def sub(self, num):
 		# Devuelve la resta entre dos 'Num'.
@@ -149,10 +154,6 @@ class Num:
 			num = Num(num.value, base, max_length)
 
 		aux = self + ~num
-		if(self.value < num.value):
-			aux = ~aux
-		else:
-			aux += 1
 		return aux
 	
 	def mul(self, num):
@@ -216,19 +217,19 @@ class Num:
 	def rshift(self, i):
 		# Mueve todos los dígitos a la derecha i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
-
 		new = Num.copy(self)
-		new._value = new._value[:-i]
-		new._value = [0]*i + new._value
+		if i != 0:
+			new._value = new._value[:-i]
+			new._value = [0]*i + new._value
 		return new
 	
 	def lshift(self, i):
 		# Mueve todos los dígitos a la izquierda i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
-
 		new = Num.copy(self)
-		new._value = new._value[i:]
-		new._value = new._value + [0]*i
+		if i != 0:
+			new._value = new._value[i:]
+			new._value = new._value + [0]*i
 		return new
 
 
@@ -236,8 +237,9 @@ class Num:
 	def __str__(self):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
-		return f"Num({Num.list_to_string(self._value)})[{self.base}]"
-
+		if self._sign:	
+			return f"Num({Num.list_to_string(self._value)})[{self.base}]"
+		return f"Num(-{Num.list_to_string(self.invert()._value)})[{self.base}]"
 	def __repr__(self):
 		# Es una representación imprimible del objeto.
 		return self.__str__()
