@@ -27,7 +27,7 @@ if __name__=="__main__":
 		file.write("n;natural;karatsuba\n")
 		for i in range(len(numbers)):
 			print("Nueva iteracion...")
-			time_natural=timeit.timeit("numbers[i] * numbers[i]",globals=globals(),number=1)
-			time_karatsuba=timeit.timeit("Knumbers[i] * Knumbers[i]",globals=globals(),number=1) 
+			time_natural = timeit.timeit("numbers[i] * numbers[i]", globals=globals(), number=1)
+			time_karatsuba = timeit.timeit("Knumbers[i] * Knumbers[i]", globals=globals(), number=1) 
 			file.write(f"{i};{tocomma(time_natural)};{tocomma(time_karatsuba)}\n")
 	print("Listo...")
