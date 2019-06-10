@@ -18,7 +18,7 @@ class KNum(Num):
 
 		# Caso recursivo
 		n = max(self.size, knum.size)
-		m = n/2
+		m = n//2
 
 		x1, x0 = self.cut(m)
 		y1, y0 = knum.cut(m)
