@@ -21,13 +21,19 @@ def tocomma(n):
 	return str(n).replace(".",",")
 
 if __name__=="__main__":
-	numbers = [Num(x) for x in range(100, 1000000, 150)]
-	Knumbers = [KNum(x) for x in range(100, 1000000, 150)]
+	numbers = [Num(x) for x in range(0, 500, 100)]
+	Knumbers = [KNum(x) for x in range(0, 500, 100)]
 	with open("../data/TiempoCorrida_Natural_Karatsuba.csv","w")as file:
 		file.write("n;natural;karatsuba\n")
 		for i in range(len(numbers)):
-			print("Nueva iteracion...")
+			print(f'\n\n***** Processing case {i} *****')
+			print(f"\n NATURAL: {numbers[i]} * {numbers[i]}")
 			time_natural = timeit.timeit("numbers[i] * numbers[i]", globals=globals(), number=1)
-			time_karatsuba = timeit.timeit("Knumbers[i] * Knumbers[i]", globals=globals(), number=1) 
+			print(f" Result: {numbers[i] * numbers[i]}")
+			print(f" Time: {tocomma(time_natural)}")
+			print(f"\n KARATSUBA: {Knumbers[i]} * {Knumbers[i]}")
+			time_karatsuba = timeit.timeit("Knumbers[i] * Knumbers[i]", globals=globals(), number=1)
+			print(f" Result: {Knumbers[i] * Knumbers[i]}")
+			print(f" Time: {tocomma(time_karatsuba)}")
 			file.write(f"{i};{tocomma(time_natural)};{tocomma(time_karatsuba)}\n")
-	print("Listo...")
+	print("Done...")
