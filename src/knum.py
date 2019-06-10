@@ -22,7 +22,7 @@ class KNum(Num):
 
 		# Caso base
 		if self.size <= 1 or knum.size <= 1:
-			return KNum(self.value * knum.value, self.base, self.max_length)
+			return KNum(self.value * knum.value, base, max_length)
 
 		# Caso recursivo
 		n = max(self.size, knum.size)
@@ -34,7 +34,7 @@ class KNum(Num):
 		z0 = x0.karatsuba(y0)
 		z2 = x1.karatsuba(y1)
 
-		z1 = (x0 + x1).karatsuba(y1 + y0) - z2 - z0
+		z1 = (x1 + x0).karatsuba(y1 + y0) - z2 - z0
 
 		return (z2 << (2*m)) + (z1 << m) + z0
 
@@ -44,23 +44,23 @@ class KNum(Num):
 		t = super().cut(i)
 		return KNum.copy(t[0]), KNum.copy(t[1])
 
-	def add(self, num):
-		return KNum.copy(super().add(num))
+	def add(self, knum):
+		return KNum.copy(super().add(knum))
 
 	def invert(self):
 		return KNum.copy(super().invert())
 
-	def sub(self, num):
-		return KNum.copy(super().sub(num))
+	def sub(self, knum):
+		return KNum.copy(super().sub(knum))
 	
-	def mul(self, num):
-		return KNum.copy(self.karatsuba(num))
+	def mul(self, knum):
+		return KNum.copy(self.karatsuba(knum))
 
 	def pow(self, i):
 		return KNum.copy(super().pow(i))
 
-	def div(self, num):
-		t = super().div(num)
+	def div(self, knum):
+		t = super().div(knum)
 		return KNum.copy(t[0]), KNum.copy(t[1])
 
 	def rshift(self, i): #mueve a la derecha
@@ -72,4 +72,4 @@ class KNum(Num):
 	def __str__(self):
 		# Cuando se convierte el objeto a un 'str'.
 		# Es lo que se imprime cuando uno hace print('objeto').
-		return f"KNum({Num.list_to_string(self._value)})[{self.base}]"
+		return f"KNum({self.string})[{self.base}]"
