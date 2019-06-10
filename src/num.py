@@ -134,7 +134,7 @@ class Num:
 		new = []
 		for i in self._value:
 			new += [abs(self.base - 1 - i)]
-		return Num(new, self.base, self.max_length)
+		return Num(new, self.base, self.max_length) + 1
 
 	def sub(self, num):
 		# Devuelve la resta entre dos 'Num'.
@@ -149,10 +149,9 @@ class Num:
 			num = Num(num.value, base, max_length)
 
 		aux = self + ~num
-		if(self.value < num.value):
+
+		if self.value < num.value:
 			aux = ~aux
-		else:
-			aux += 1
 		return aux
 	
 	def mul(self, num):
@@ -217,6 +216,9 @@ class Num:
 		# Mueve todos los dígitos a la derecha i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
 
+		if i == 0:
+			return self
+
 		new = Num.copy(self)
 		new._value = new._value[:-i]
 		new._value = [0]*i + new._value
@@ -225,6 +227,9 @@ class Num:
 	def lshift(self, i):
 		# Mueve todos los dígitos a la izquierda i campos.
 		if not isinstance(i, int): raise Exception("'i' debe ser un 'int'.")
+		
+		if i == 0:
+			return self
 
 		new = Num.copy(self)
 		new._value = new._value[i:]

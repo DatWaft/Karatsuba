@@ -1,16 +1,16 @@
 import time
 import sys
-from num import Num
+from knum import KNum
 
 def test(file_path, mode = None):
     def mult(expected, xval, yval):
-        return Num(expected), Num(xval) * Num(yval)
+        return KNum(expected), KNum(xval) * KNum(yval)
     def div(expected, xval, yval):
-        return Num(expected), Num(xval) / Num(yval)
+        return KNum(expected), KNum(xval) / KNum(yval)
     def sum(expected, xval, yval):
-        return Num(expected), Num(xval) + Num(yval)
+        return KNum(expected), KNum(xval) + KNum(yval)
     def rest(expected, xval, yval):
-        return Num(expected), Num(xval) - Num(yval)
+        return KNum(expected), KNum(xval) - KNum(yval)
 
     print("*** Reading Test Cases ***")
     cases = None
